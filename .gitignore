@@ -1,0 +1,6 @@
+*.pt
+*.engine
+*.onnx
+*.tar.gz
+*.jpg
+.torch_cache/
