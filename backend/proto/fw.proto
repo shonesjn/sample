@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/BuzzingTaz/fw-edge-apps/proto";
+
+package fwproto;
+
+service ComputeStream {
+  rpc OffloadImage(DecodedFrame) returns (InferenceResult);
+  rpc StreamVideo(stream RTPPacket) returns (stream InferenceResult);
+  rpc StreamDecodedVideo(stream DecodedFrame) returns (stream InferenceResult);
+}
+
+// New: Client->Scheduler gRPC service (replaces WebSocket for frame streaming)
+service SchedulerStream {
+  rpc StreamFrames(stream ClientFrame) returns (stream InferenceResult);
+}
+
+message StageTimestamps {
+  int64 client_capture_ms         = 1;
+  int64 scheduler_receive_ms      = 2;
+  int64 scheduler_decision_ms     = 3;
+  int64 compute_receive_ms        = 4;
+  int64 udp_send_ms               = 5;
+  int64 python_receive_ms         = 6;
+  int64 yolo_inference_start_ms   = 7;
+  int64 yolo_inference_end_ms     = 8;
+  int64 python_grpc_send_ms       = 9;
+  int64 compute_receive_result_ms = 10;
+  int64 scheduler_receive_result_ms = 11;
+  int64 frontend_send_ms          = 12;
+}
+
+message DecodedFrame {
+  uint64 timestamp  = 1;
+  bytes frame_data  = 2;
+}
+
+message InferenceResult {
+  uint64 timestamp           = 1;
+  uint64 processing_status   = 2;
+  repeated BoundingBox detections = 3;
+  string frame_id            = 4;
+  StageTimestamps stage_ts   = 5;
+  float inference_latency_ms = 6;
+  string stream_id           = 7;
+  string node_name           = 8;
+}
+
+message BoundingBox {
+  uint64 x           = 1;
+  uint64 y           = 2;
+  uint64 dx          = 3;
+  uint64 dy          = 4;  // FIXED: was =5, skipping 4
+  string label       = 5;  // FIXED: renumbered
+  float confidence   = 6;  // FIXED: renumbered
+}
+
+message RTPPacket {
+  bytes data       = 1;
+  string track_id  = 2;
+  uint32 ssrc      = 3;
+  string frame_id  = 4;
+  string stream_id = 5;
+  StageTimestamps stage_ts = 6;
+}
+
+// New: For gRPC client->scheduler migration
+message ClientFrame {
+  bytes jpeg_data            = 1;
+  string stream_id           = 2;
+  string frame_id            = 3;
+  int64 capture_timestamp_ms = 4;
+  StageTimestamps stage_ts   = 5;
+}
+
+message StreamSummary {
+  int32 packets_received = 1;
+  string message         = 2;
+}
+
+message MeasureEvent {
+  google.protobuf.Timestamp meas_time    = 1;
+  string user_id                           = 2;
+  string task_id                           = 3;
+  string service_name                      = 4;
+  string event_type                        = 5;
+  map<string, string> payload              = 6;
+}

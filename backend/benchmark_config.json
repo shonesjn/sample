@@ -1,0 +1,25 @@
+{
+  "scheduler_addr": "localhost:9998",
+  "streams": [
+    { "stream_id": "stream-01", "video_path": "mock", "assigned_node": "dqn" },
+    { "stream_id": "stream-02", "video_path": "mock", "assigned_node": "dqn" },
+    { "stream_id": "stream-03", "video_path": "mock", "assigned_node": "dqn" },
+    { "stream_id": "stream-04", "video_path": "mock", "assigned_node": "dqn" },
+    { "stream_id": "stream-05", "video_path": "mock", "assigned_node": "dqn" },
+    { "stream_id": "stream-06", "video_path": "mock", "assigned_node": "dqn" },
+    { "stream_id": "stream-07", "video_path": "mock", "assigned_node": "dqn" },
+    { "stream_id": "stream-08", "video_path": "mock", "assigned_node": "dqn" },
+    { "stream_id": "stream-09", "video_path": "mock", "assigned_node": "dqn" },
+    { "stream_id": "stream-10", "video_path": "mock", "assigned_node": "dqn" },
+    { "stream_id": "stream-11", "video_path": "mock", "assigned_node": "dqn" },
+    { "stream_id": "stream-12", "video_path": "mock", "assigned_node": "dqn" },
+    { "stream_id": "stream-13", "video_path": "mock", "assigned_node": "dqn" },
+    { "stream_id": "stream-14", "video_path": "mock", "assigned_node": "dqn" },
+    { "stream_id": "stream-15", "video_path": "mock", "assigned_node": "dqn" },
+    { "stream_id": "stream-16", "video_path": "mock", "assigned_node": "dqn" },
+    { "stream_id": "stream-17", "video_path": "mock", "assigned_node": "dqn" },
+    { "stream_id": "stream-18", "video_path": "mock", "assigned_node": "dqn" },
+    { "stream_id": "stream-19", "video_path": "mock", "assigned_node": "dqn" },
+    { "stream_id": "stream-20", "video_path": "mock", "assigned_node": "dqn" }
+  ]
+}

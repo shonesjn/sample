@@ -1,0 +1,46 @@
+# Dependencies & Build artifacts
+node_modules/
+.next/
+dist/
+build/
+out/
+.venv/
+venv/
+ENV/
+env/
+
+# Python & PyTorch / TensorRT caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+*.engine
+*.onnx
+
+# Go Binaries & Tests
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+scheduler.exe
+benchmark.exe
+
+# Logs & Generated Telemetry Metrics / Images
+*.log
+logs/
+*.csv
+scheduler_metrics.csv
+*.png
+
+# Environment & IDE
+.env
+.env*.local
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
