@@ -1,1 +1,8 @@
 *.tsbuildinfo
+
+node_modules/
+.next/
+dist/
+build/
+backend/received_frames/
+*.jpg

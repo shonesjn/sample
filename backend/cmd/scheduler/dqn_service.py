@@ -1,4 +1,4 @@
-git ls-remote --heads origin
+import argparse
 import json
 import os
 import random
