@@ -22,27 +22,30 @@ def generate_chart():
         "s9_sched_to_frontend_ms"
     ]
 
-    stage_sums = {s: 0.0 for s in stages}
-    count = 0
-
-    with open(csv_file, mode='r') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            try:
-                # Only include rows where the tracking was active
-                if float(row.get("end_to_end_latency_ms", 0.0)) > 0:
-                    for s in stages:
-                        stage_sums[s] += float(row.get(s, 0.0))
-                    count += 1
-            except (ValueError, TypeError):
-                continue
-
-    if count == 0:
-        print("No active tracking data found in CSV yet. Ensure frames are streaming and scheduler is running.")
+    import pandas as pd
+    try:
+        # Filter null bytes if file was partially written
+        with open(csv_file, 'rb') as f:
+            content = f.read().replace(b'\x00', b'')
+        import io
+        df = pd.read_csv(io.BytesIO(content))
+        for s in stages:
+            if s in df.columns:
+                df[s] = pd.to_numeric(df[s], errors='coerce').fillna(0.0)
+        
+        valid_df = df[df.get('end_to_end_latency_ms', 0) > 0]
+        if len(valid_df) == 0:
+            valid_df = df
+        
+        count = len(valid_df)
+        if count == 0:
+            print("No active tracking data found in CSV yet. Ensure frames are streaming and scheduler is running.")
+            return
+        
+        averages = {s: float(valid_df[s].mean()) if s in valid_df.columns else 0.0 for s in stages}
+    except Exception as e:
+        print(f"Error reading CSV: {e}")
         return
-
-    # Compute averages
-    averages = {s: stage_sums[s] / count for s in stages}
     labels = [
         "S1: Client -> Sched\n(Network)",
         "S2: Decision\n(DQN)",

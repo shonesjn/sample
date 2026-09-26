@@ -6,3 +6,12 @@ dist/
 build/
 backend/received_frames/
 *.jpg
+
+.env
+.env.*
+__pycache__/
+*.pyc
+.venv/
+venv/
+.idea/
+*.log

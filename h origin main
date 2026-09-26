@@ -1,0 +1,73 @@
+warning: in the working copy of '.gitignore', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/.gitignore b/.gitignore[m
+[1mindex 337e917..cf61752 100644[m
+[1m--- a/.gitignore[m
+[1m+++ b/.gitignore[m
+[36m@@ -6,3 +6,12 @@[m [mdist/[m
+ build/[m
+ backend/received_frames/[m
+ *.jpg[m
+[32m+[m
+[32m+[m[32m.env[m
+[32m+[m[32m.env.*[m
+[32m+[m[32m__pycache__/[m
+[32m+[m[32m*.pyc[m
+[32m+[m[32m.venv/[m
+[32m+[m[32mvenv/[m
+[32m+[m[32m.idea/[m
+[32m+[m[32m*.log[m
+[1mdiff --git a/backend/plot_overheads.py b/backend/plot_overheads.py[m
+[1mindex d41152e..c52326f 100644[m
+[1m--- a/backend/plot_overheads.py[m
+[1m+++ b/backend/plot_overheads.py[m
+[36m@@ -22,27 +22,30 @@[m [mdef generate_chart():[m
+         "s9_sched_to_frontend_ms"[m
+     ][m
+ [m
+[31m-    stage_sums = {s: 0.0 for s in stages}[m
+[31m-    count = 0[m
+[31m-[m
+[31m-    with open(csv_file, mode='r') as f:[m
+[31m-        reader = csv.DictReader(f)[m
+[31m-        for row in reader:[m
+[31m-            try:[m
+[31m-                # Only include rows where the tracking was active[m
+[31m-                if float(row.get("end_to_end_latency_ms", 0.0)) > 0:[m
+[31m-                    for s in stages:[m
+[31m-                        stage_sums[s] += float(row.get(s, 0.0))[m
+[31m-                    count += 1[m
+[31m-            except (ValueError, TypeError):[m
+[31m-                continue[m
+[31m-[m
+[31m-    if count == 0:[m
+[31m-        print("No active tracking data found in CSV yet. Ensure frames are streaming and scheduler is running.")[m
+[32m+[m[32m    import pandas as pd[m
+[32m+[m[32m    try:[m
+[32m+[m[32m        # Filter null bytes if file was partially written[m
+[32m+[m[32m        with open(csv_file, 'rb') as f:[m
+[32m+[m[32m            content = f.read().replace(b'\x00', b'')[m
+[32m+[m[32m        import io[m
+[32m+[m[32m        df = pd.read_csv(io.BytesIO(content))[m
+[32m+[m[32m        for s in stages:[m
+[32m+[m[32m            if s in df.columns:[m
+[32m+[m[32m                df[s] = pd.to_numeric(df[s], errors='coerce').fillna(0.0)[m
+[32m+[m[41m        [m
+[32m+[m[32m        valid_df = df[df.get('end_to_end_latency_ms', 0) > 0][m
+[32m+[m[32m        if len(valid_df) == 0:[m
+[32m+[m[32m            valid_df = df[m
+[32m+[m[41m        [m
+[32m+[m[32m        count = len(valid_df)[m
+[32m+[m[32m        if count == 0:[m
+[32m+[m[32m            print("No active tracking data found in CSV yet. Ensure frames are streaming and scheduler is running.")[m
+[32m+[m[32m            return[m
+[32m+[m[41m        [m
+[32m+[m[32m        averages = {s: float(valid_df[s].mean()) if s in valid_df.columns else 0.0 for s in stages}[m
+[32m+[m[32m    except Exception as e:[m
+[32m+[m[32m        print(f"Error reading CSV: {e}")[m
+         return[m
+[31m-[m
+[31m-    # Compute averages[m
+[31m-    averages = {s: stage_sums[s] / count for s in stages}[m
+     labels = [[m
+         "S1: Client -> Sched\n(Network)",[m
+         "S2: Decision\n(DQN)",[m
